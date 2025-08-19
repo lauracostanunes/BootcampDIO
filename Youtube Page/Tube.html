@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A vida não é feita de metas! | Clóvis de Barros - VocêTube</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: #030303;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            height: 56px;
+            background-color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            border-bottom: 1px solid #e5e5e5;
+            z-index: 100;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-icon {
+            margin-right: 24px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            color: #ff0000;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .logo i {
+            margin-right: 5px;
+        }
+
+        .search-area {
+            display: flex;
+            align-items: center;
+            flex: 0 1 728px;
+            margin: 0 40px;
+        }
+
+        .search-box {
+            display: flex;
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 8px 16px;
+            border: 1px solid #ccc;
+            border-right: none;
+            border-radius: 2px 0 0 2px;
+            font-size: 16px;
+        }
+
+        .search-button {
+            background: #f8f8f8;
+            border: 1px solid #ccc;
+            border-radius: 0 2px 2px 0;
+            padding: 0 16px;
+            cursor: pointer;
+            height: 40px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-actions i {
+            margin-left: 24px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .container {
+            display: flex;
+            margin-top: 56px;
+            min-height: calc(100vh - 56px);
+        }
+
+        .video-container {
+            flex: 1;
+            margin-left: 240px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-player {
+            width: 100%;
+            background-color: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .video-player-placeholder {
+            width: 100%;
+            padding-top: 56.25%;
+            background: linear-gradient(45deg, #2c3e50, #4a69bd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .video-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .video-controls-left, .video-controls-center, .video-controls-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            margin: 0 10px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .progress {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background-color: #ff0000;
+            width: 30%;
+            border-radius: 2px;
+        }
+
+        .video-info {
+            margin-bottom: 16px;
+        }
+
+        .video-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .video-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .video-views {
+            color: #606060;
+            font-size: 14px;
+        }
+
+        .video-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .action-button {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #606060;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .action-button:hover {
+            color: #065fd4;
+        }
+
+        .channel-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .channel-details {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .channel-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #ff0000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .channel-meta h3 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .channel-meta p {
+            color: #606060;
+            font-size: 14px;
+        }
+
+        .subscribe-button {
+            background-color: #cc0000;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .member-button {
+            background-color: #f8f8f8;
+            color: #030303;
+            border: 1px solid #e5e5e5;
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-right: 12px;
+        }
+
+        .video-description {
+            background-color: #f2f2f2;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            cursor: pointer;
+        }
+
+        .video-description p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .video-description .show-more {
+            color: #606060;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .comments-section {
+            margin-top: 24px;
+        }
+
+        .comments-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 16px;
+        }
+
+        .comments-sort {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #606060;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .add-comment {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #4a69bd, #1e3799);
+            flex-shrink: 0;
+        }
+
+        .comment-input {
+            flex: 1;
+            border: none;
+            border-bottom: 1px solid #e5e5e5;
+            padding-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-bottom: 1px solid #065fd4;
+        }
+
+        .comment {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .comment-content h4 {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .comment-content p {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .comment-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .comment-action {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #606060;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .related-videos {
+            width: 402px;
+            padding: 24px 24px 24px 0;
+            margin-left: 24px;
+        }
+
+        .related-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            color: #606060;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .related-video {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+
+        .related-thumbnail {
+            width: 168px;
+            height: 94px;
+            border-radius: 4px;
+            background: linear-gradient(45deg, #2c3e50, #4a69bd);
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .related-duration {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-size: 12px;
+        }
+
+        .related-info h4 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .related-info p {
+            color: #606060;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        aside {
+            width: 240px;
+            background-color: #fff;
+            position: fixed;
+            top: 56px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            padding: 12px 0;
+            transition: width 0.3s;
+        }
+
+        .sidebar-section {
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 24px;
+            cursor: pointer;
+        }
+
+        .sidebar-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .sidebar-item.active {
+            background-color: #e5e5e5;
+        }
+
+        .sidebar-item i {
+            margin-right: 24px;
+            font-size: 18px;
+        }
+
+        .sidebar-channel {
+            display: flex;
+            align-items: center;
+            padding: 8px 24px;
+            cursor: pointer;
+        }
+
+        .sidebar-channel:hover {
+            background-color: #f5f5f5;
+        }
+
+        .channel-avatar-sidebar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #ff0000;
+            margin-right: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+        @media (max-width: 1200px) {
+            .video-container {
+                margin-left: 72px;
+            }
+            
+            aside {
+                width: 72px;
+            }
+            
+            aside .sidebar-text, 
+            aside .channel-name {
+                display: none;
+            }
+            
+            .sidebar-item i,
+            .channel-avatar-sidebar {
+                margin-right: 0;
+            }
+        }
+
+        @media (max-width: 960px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .related-videos {
+                width: 100%;
+                margin-left: 0;
+                padding: 0 24px 24px 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-area {
+                margin: 0 12px;
+            }
+            
+            .video-stats, .channel-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .video-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .channel-buttons {
+                display: flex;
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            aside {
+                display: none;
+            }
+            
+            .video-container {
+                margin-left: 0;
+                padding: 16px;
+            }
+            
+            .search-box {
+                display: none;
+            }
+            
+            .related-videos {
+                padding: 0 16px 16px 16px;
+            }
+            
+            .related-video {
+                flex-direction: column;
+            }
+            
+            .related-thumbnail {
+                width: 100%;
+                height: 0;
+                padding-top: 56.25%;
+                position: relative;
+            }
+            
+            .related-thumbnail > div {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-area">
+            <div class="menu-icon">
+                <i class="fas fa-bars"></i>
+            </div>
+            <div class="logo">
+                <i class="fab fa-youtube"></i>
+                <span>VocêTube</span>
+            </div>
+        </div>
+        
+        <div class="search-area">
+            <div class="search-box">
+                <input type="text" placeholder="Pesquisar">
+                <button class="search-button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="user-actions">
+            <i class="fas fa-video"></i>
+            <i class="fas fa-th"></i>
+            <i class="fas fa-bell"></i>
+            <i class="fas fa-user-circle"></i>
+        </div>
+    </header>
+    <div class="container">
+        <aside>
+            <div class="sidebar-section">
+                <div class="sidebar-item active">
+                    <i class="fas fa-home"></i>
+                    <span class="sidebar-text">Início</span>
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-fire"></i>
+                    <span class="sidebar-text">Em alta</span>
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-compass"></i>
+                    <span class="sidebar-text">Explorar</span>
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-play-circle"></i>
+                    <span class="sidebar-text">Inscrições</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-item">
+                    <i class="fas fa-photo-video"></i>
+                    <span class="sidebar-text">Biblioteca</span>
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-history"></i>
+                    <span class="sidebar-text">Histórico</span>
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-clock"></i>
+                    <span class="sidebar-text">Assistir mais tarde</span>
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-thumbs-up"></i>
+                    <span class="sidebar-text">Vídeos curtidos</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3 style="padding: 8px 24px; color: #606060; font-size: 14px;">INSCRIÇÕES</h3>
+                <div class="sidebar-channel">
+                    <div class="channel-avatar-sidebar">C</div>
+                    <span class="channel-name">Clóvis de Barros</span>
+                </div>
+                <div class="sidebar-channel">
+                    <div class="channel-avatar-sidebar">M</div>
+                    <span class="channel-name">Música Brasil</span>
+                </div>
+                <div class="sidebar-channel">
+                    <div class="channel-avatar-sidebar">G</div>
+                    <span class="channel-name">Games Oficial</span>
+                </div>
+                <div class="sidebar-channel">
+                    <div class="channel-avatar-sidebar">A</div>
+                    <span class="channel-name">Aprender Idiomas</span>
+                </div>
+                <div class="sidebar-channel">
+                    <div class="channel-avatar-sidebar">N</div>
+                    <span class="channel-name">Notícias Hoje</span>
+                </div>
+            </div>
+        </aside>
+        <div class="video-container">
+            <div class="video-player">
+                <div class="video-player-placeholder">
+                    <i class="fas fa-play-circle" style="font-size: 64px;"></i>
+                </div>
+                <div class="video-controls">
+                    <div class="video-controls-left">
+                        <i class="fas fa-play"></i>
+                        <i class="fas fa-redo"></i>
+                        <span>0:03 / 7:57</span>
+                    </div>
+                    <div class="video-controls-center">
+                        <i class="fas fa-volume-up"></i>
+                        <div class="progress-bar">
+                            <div class="progress"></div>
+                        </div>
+                    </div>
+                    <div class="video-controls-right">
+                        <i class="fas fa-cog"></i>
+                        <i class="fas fa-expand"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="video-info">
+                <h1 class="video-title">A vida não é feita de metas! | Clóvis de Barros</h1>
+                
+                <div class="video-stats">
+                    <span class="video-views">335 mil visualizações • há 3 meses</span>
+                    <div class="video-actions">
+                        <button class="action-button">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span>32 mil</span>
+                        </button>
+                        <button class="action-button">
+                            <i class="fas fa-thumbs-down"></i>
+                            <span>Não gostei</span>
+                        </button>
+                        <button class="action-button">
+                            <i class="fas fa-share"></i>
+                            <span>Compartilhar</span>
+                        </button>
+                        <button class="action-button">
+                            <i class="fas fa-cut"></i>
+                            <span>Salvar</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="channel-info">
+                    <div class="channel-details">
+                        <div class="channel-avatar">C</div>
+                        <div class="channel-meta">
+                            <h3>Clóvis de Barros Filho</h3>
+                            <p>363 mil inscritos</p>
+                        </div>
+                    </div>
+                    <div class="channel-buttons">
+                        <button class="member-button">Seja membro</button>
+                        <button class="subscribe-button">Inscrever-se</button>
+                    </div>
+                </div>
+                
+                <div class="video-description">
+                    <p>#PartiuPensar</p>
+                    <p>Neste vídeo, o professor Clóvis nos mostra como a jornada da vida pode ser ilusória.</p>
+                    <p>Siga o professor no Instagram: clovisdebarros ...</p>
+                    <p class="show-more">MAIS</p>
+                </div>
+            </div>
+
+            <div class="comments-section">
+                <div class="comments-header">
+                    <h3>84 comentários</h3>
+                    <div class="comments-sort">
+                        <i class="fas fa-sort"></i>
+                        <span>Ordenar por</span>
+                    </div>
+                </div>
+                
+                <div class="add-comment">
+                    <div class="user-avatar"></div>
+                    <input type="text" class="comment-input" placeholder="Adicione um comentário público...">
+                </div>
+                
+                <div class="comment">
+                    <div class="user-avatar" style="background: linear-gradient(45deg, #ff9ff3, #f368e0);"></div>
+                    <div class="comment-content">
+                        <h4>Maria Silva <span style="color: #606060; font-weight: normal;">há 2 meses</span></h4>
+                        <p>Esse vídeo mudou minha perspectiva sobre a vida. Obrigada, professor!</p>
+                        <div class="comment-actions">
+                            <div class="comment-action">
+                                <i class="fas fa-thumbs-up"></i>
+                                <span>842</span>
+                            </div>
+                            <div class="comment-action">
+                                <i class="fas fa-thumbs-down"></i>
+                            </div>
+                            <div class="comment-action">
+                                RESPONDER
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="comment">
+                    <div class="user-avatar" style="background: linear-gradient(45deg, #feca57, #ff9f43);"></div>
+                    <div class="comment-content">
+                        <h4>João Santos <span style="color: #606060; font-weight: normal;">há 1 mês</span></h4>
+                        <p>Clóvis sempre trazendo reflexões incríveis! Ansioso pelo próximo vídeo.</p>
+                        <div class="comment-actions">
+                            <div class="comment-action">
+                                <i class="fas fa-thumbs-up"></i>
+                                <span>521</span>
+                            </div>
+                            <div class="comment-action">
+                                <i class="fas fa-thumbs-down"></i>
+                            </div>
+                            <div class="comment-action">
+                                RESPONDER
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="related-videos">
+            <div class="related-header">
+                <span>Próximo</span>
+                <i class="fas fa-automobile"></i>
+            </div>
+            
+            <div class="related-video">
+                <div class="related-thumbnail">
+                    <div class="related-duration">21:07</div>
+                </div>
+                <div class="related-info">
+                    <h4>A vida não é feita de metas! - Clóvis de Barros</h4>
+                    <p>Clóvis de Barros Filho</p>
+                    <p>21 mil visualizações • há 3 semanas</p>
+                </div>
+            </div>
+            
+            <div class="related-video">
+                <div class="related-thumbnail">
+                    <div class="related-duration">15:42</div>
+                </div>
+                <div class="related-info">
+                    <h4>Como Mudar Sua Vida Em 6 Meses</h4>
+                    <p>Leo Xavier</p>
+                    <p>34 mil visualizações • há 13 dias</p>
+                </div>
+            </div>
+            
+            <div class="related-video">
+                <div class="related-thumbnail">
+                    <div class="related-duration">18:33</div>
+                </div>
+                <div class="related-info">
+                    <h4>Tenha tesão pela vida | Clóvis de Barros</h4>
+                    <p>Clóvis de Barros</p>
+                    <p>213 mil visualizações • há 4 meses</p>
+                </div>
+            </div>
+            
+            <div class="related-video">
+                <div class="related-thumbnail">
+                    <div class="related-duration">12:25</div>
+                </div>
+                <div class="related-info">
+                    <h4>Luna Jarra de Xarope de Ambrose Bierce | Conto em áudio</h4>
+                    <p>Volodipar</p>
+                    <p>5 visualizações • há 13 horas</p>
+                </div>
+            </div>
+            <div class="related-video">
+                <div class="related-thumbnail">
+                    <div class="related-duration">10:18</div>
+                </div>
+                <div class="related-info">
+                    <h4>Como Aprender Qualquer Coisa 10x mais Rápido</h4>
+                    <p>Reservatório de Dopamina</p>
+                    <p>47 mil visualizações • há 13 dias</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelector('.sidebar-item.active').classList.remove('active');
+                this.classList.add('active');
+            });
+        });
+        document.querySelector('.menu-icon').addEventListener('click', function() {
+            const aside = document.querySelector('aside');
+            if (window.innerWidth <= 480) {
+                aside.style.display = aside.style.display === 'none' ? 'block' : 'none';
+            }
+        });
+        const progressBar = document.querySelector('.progress-bar');
+        progressBar.addEventListener('click', function(e) {
+            const rect = progressBar.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const clickedValue = x / rect.width;
+            document.querySelector('.progress').style.width = `${clickedValue * 100}%`;
+            const totalMinutes = 7 * 60 + 57;
+            const newTime = Math.floor(totalMinutes * clickedValue);
+            const minutes = Math.floor(newTime / 60);
+            const seconds = newTime % 60;
+            document.querySelector('.video-controls-left span').textContent = 
+                `${minutes}:${seconds < 10 ? '0' + seconds : seconds} / 7:57`;
+        });
+        document.querySelector('.video-description').addEventListener('click', function() {
+            this.classList.toggle('expanded');
+            const moreText = this.querySelector('.show-more');
+            if (this.classList.contains('expanded')) {
+                moreText.textContent = 'MENOS';
+            } else {
+                moreText.textContent = 'MAIS';
+            }
+        });
+    </script>
+</body>
+</html>
