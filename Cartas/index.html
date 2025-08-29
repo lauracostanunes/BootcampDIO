@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yu-Gi-Oh! Duelo de Cartas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c1a3a, #1a3a6b);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px #00b7ff, 0 0 20px #00b7ff;
+            margin-bottom: 10px;
+        }
+        
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .turn-indicator {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 10px;
+            color: #ffdd00;
+        }
+        
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .player, .opponent {
+            text-align: center;
+        }
+        
+        .life-points {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffdd00;
+        }
+        
+        .board {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .player-field, .opponent-field {
+            background: rgba(0, 30, 60, 0.7);
+            border: 2px solid #00b7ff;
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 250px;
+        }
+        
+        .field-title {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: #00b7ff;
+        }
+        
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            min-height: 180px;
+        }
+        
+        .card {
+            width: 100px;
+            height: 140px;
+            background: linear-gradient(135deg, #8b4513, #5d2906);
+            border: 2px solid #ffdd00;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 221, 0, 0.5);
+        }
+        
+        .card.monster {
+            background: linear-gradient(135deg, #cd7f32, #8b4513);
+        }
+        
+        .card.spell {
+            background: linear-gradient(135deg, #1e90ff, #0066cc);
+        }
+        
+        .card.trap {
+            background: linear-gradient(135deg, #dc143c, #8b0000);
+        }
+        
+        .card.face-down {
+            background: linear-gradient(135deg, #1a3a6b, #0c1a3a);
+        }
+        
+        .card-title {
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 5px;
+            text-align: center;
+            font-weight: bold;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card-image {
+            flex: 1;
+            background-color: #aaa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        
+        .card-stats {
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            font-size: 0.8rem;
+            padding: 3px;
+            text-align: center;
+        }
+        
+        .card.attack-position::after {
+            content: "ATK";
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 0, 0, 0.7);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+        }
+        
+        .card.defense-position::after {
+            content: "DEF";
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0, 128, 0, 0.7);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #ffdd00, #ff9500);
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 221, 0, 0.7);
+        }
+        
+        button:disabled {
+            background: linear-gradient(135deg, #555, #333);
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a3a6b, #0c1a3a);
+            border: 3px solid #00b7ff;
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .close-modal {
+            float: right;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #ffdd00;
+        }
+        
+        .card-detail {
+            text-align: center;
+        }
+        
+        .card-detail-image {
+            width: 100%;
+            height: 300px;
+            background-color: #aaa;
+            margin: 15px 0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+        
+        .card-detail-info {
+            text-align: left;
+            margin-top: 15px;
+        }
+        
+        .card-detail-info p {
+            margin-bottom: 10px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .action-buttons button {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+        
+        .message-log {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .message.player {
+            color: #00b7ff;
+        }
+        
+        .message.opponent {
+            color: #ff6b6b;
+        }
+        
+        .message.system {
+            color: #ffdd00;
+        }
+        
+        @media (max-width: 768px) {
+            .board {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>YU-GI-OH! DUELO DE CARTAS</h1>
+        <p>Duelo contra a máquina em uma batalha épica!</p>
+    </header>
+    
+    <div class="game-container">
+        <div class="turn-indicator" id="turn-indicator">Seu Turno</div>
+        
+        <div class="score-board">
+            <div class="player">
+                <h2>JOGADOR</h2>
+                <div class="life-points" id="player-life">8000</div>
+            </div>
+            <div class="opponent">
+                <h2>OPONENTE</h2>
+                <div class="life-points" id="opponent-life">8000</div>
+            </div>
+        </div>
+        
+        <div class="board">
+            <div class="opponent-field">
+                <div class="field-title">CAMPO DO OPONENTE</div>
+                <div class="cards-container" id="opponent-cards">
+                    <!-- Cartas do oponente serão inseridas aqui via JavaScript -->
+                </div>
+            </div>
+            
+            <div class="player-field">
+                <div class="field-title">SEU CAMPO</div>
+                <div class="cards-container" id="player-cards">
+                    <!-- Cartas do jogador serão inseridas aqui via JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="draw-card">Comprar Carta</button>
+            <button id="battle-phase" disabled>Fase de Batalha</button>
+            <button id="end-turn">Finalizar Turno</button>
+            <button id="new-game">Novo Jogo</button>
+        </div>
+        
+        <div class="message-log" id="message-log">
+            <div class="message system">Bem-vindo ao Duelo! Prepare-se para jogar.</div>
+        </div>
+    </div>
+    
+    <div class="modal" id="card-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-modal">&times;</span>
+            <div class="card-detail" id="card-detail">
+                <!-- Detalhes da carta serão inseridos aqui via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de dados de cartas (exemplos)
+        const cardsDatabase = [
+            {
+                id: 1,
+                name: "Dragão Branco de Olhos Azuis",
+                type: "monster",
+                attribute: "Luz",
+                level: 8,
+                atk: 3000,
+                def: 2500,
+                description: "Dragão lendário conhecido por seu poderoso ataque."
+            },
+            {
+                id: 2,
+                name: "Mago Negro",
+                type: "monster",
+                attribute: "Trevas",
+                level: 7,
+                atk: 2500,
+                def: 2100,
+                description: "O ultimate wizard em termos de ataque e defesa."
+            },
+            {
+                id: 3,
+                name: "Kuriboh",
+                type: "monster",
+                attribute: "Trevas",
+                level: 1,
+                atk: 300,
+                def: 200,
+                description: "Durante o cálculo de dano, se um monstro do oponente atacar (Efeito Rápido): você pode descartar este card; você não sofre dano de batalha dessa batalha."
+            },
+            {
+                id: 4,
+                name: "Cavaleiro Goblin",
+                type: "monster",
+                attribute: "Terra",
+                level: 4,
+                atk: 1900,
+                def: 0,
+                description: "Embora seja sempre muito leal, este monstro de um olho só é detestado pelos outros."
+            },
+            {
+                id: 5,
+                name: "Fada Elfídea",
+                type: "monster",
+                attribute: "Vento",
+                level: 4,
+                atk: 1800,
+                def: 1600,
+                description: "Esta linda fada tem uma personalidade perversa."
+            },
+            {
+                id: 6,
+                name: "Polimerização",
+                type: "spell",
+                description: "Permite Invocar por Invocação-Fusão 1 Monstro de Fusão do seu Deck Adicional, usando monstros da sua mão ou do campo como Matéria de Fusão."
+            },
+            {
+                id: 7,
+                name: "Buraco Negro",
+                type: "spell",
+                description: "Destrói todos os monstros no campo."
+            },
+            {
+                id: 8,
+                name: "Cilada",
+                type: "trap",
+                description: "Quando seu oponente Invoca um monstro por Invocação-Normal: destrua esse monstro."
+            }
+        ];
+
+        // Variáveis do jogo
+        let playerLife = 8000;
+        let opponentLife = 8000;
+        let playerDeck = [];
+        let opponentDeck = [];
+        let playerHand = [];
+        let opponentHand = [];
+        let playerField = [];
+        let opponentField = [];
+        let currentPlayer = 'player';
+        let gameStarted = false;
+        let gamePhase = 'draw'; // draw, main, battle, end
+        let selectedCard = null;
+        let messageLog = [];
+
+        // Elementos do DOM
+        const playerLifeElement = document.getElementById('player-life');
+        const opponentLifeElement = document.getElementById('opponent-life');
+        const playerCardsContainer = document.getElementById('player-cards');
+        const opponentCardsContainer = document.getElementById('opponent-cards');
+        const drawCardButton = document.getElementById('draw-card');
+        const battlePhaseButton = document.getElementById('battle-phase');
+        const endTurnButton = document.getElementById('end-turn');
+        const newGameButton = document.getElementById('new-game');
+        const cardModal = document.getElementById('card-modal');
+        const closeModalButton = document.getElementById('close-modal');
+        const cardDetailContainer = document.getElementById('card-detail');
+        const turnIndicator = document.getElementById('turn-indicator');
+        const messageLogContainer = document.getElementById('message-log');
+
+        // Inicializar o jogo
+        function initGame() {
+            playerLife = 8000;
+            opponentLife = 8000;
+            playerDeck = [...cardsDatabase, ...cardsDatabase, ...cardsDatabase]; // Criar um deck maior
+            opponentDeck = [...cardsDatabase, ...cardsDatabase, ...cardsDatabase];
+            playerHand = [];
+            opponentHand = [];
+            playerField = [];
+            opponentField = [];
+            currentPlayer = 'player';
+            gameStarted = true;
+            gamePhase = 'draw';
+            selectedCard = null;
+            messageLog = [];
+
+            // Embaralhar os decks
+            shuffleDeck(playerDeck);
+            shuffleDeck(opponentDeck);
+
+            // Comprar 5 cartas iniciais
+            for (let i = 0; i < 5; i++) {
+                playerHand.push(drawCard(playerDeck));
+                opponentHand.push(drawCard(opponentDeck));
+            }
+
+            updateUI();
+            drawCardButton.disabled = false;
+            battlePhaseButton.disabled = true;
+            endTurnButton.disabled = false;
+            addMessage("Sistema", "Duelo iniciado! É a vez do Jogador.");
+        }
+
+        // Embaralhar o deck
+        function shuffleDeck(deck) {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        // Comprar uma carta do deck
+        function drawCard(deck) {
+            if (deck.length === 0) {
+                addMessage("Sistema", "Seu deck está vazio! Você perdeu o duelo.");
+                endGame(false);
+                return null;
+            }
+            return deck.pop();
+        }
+
+        // Atualizar a interface do usuário
+        function updateUI() {
+            // Atualizar pontos de vida
+            playerLifeElement.textContent = playerLife;
+            opponentLifeElement.textContent = opponentLife;
+            
+            // Atualizar indicador de turno
+            turnIndicator.textContent = currentPlayer === 'player' ? 'Seu Turno' : 'Turno do Oponente';
+            turnIndicator.textContent += ` - Fase: ${getPhaseName(gamePhase)}`;
+
+            // Atualizar cartas do jogador
+            playerCardsContainer.innerHTML = '';
+            playerHand.forEach((card, index) => {
+                const cardElement = createCardElement(card, index, 'hand');
+                playerCardsContainer.appendChild(cardElement);
+            });
+            
+            playerField.forEach((card, index) => {
+                const cardElement = createCardElement(card, index, 'field');
+                playerCardsContainer.appendChild(cardElement);
+            });
+
+            // Atualizar cartas do oponente (viradas para baixo)
+            opponentCardsContainer.innerHTML = '';
+            opponentField.forEach((card, index) => {
+                const cardElement = createCardElement(card, index, 'field', true);
+                opponentCardsContainer.appendChild(cardElement);
+            });
+            
+            // Atualizar botões
+            drawCardButton.disabled = gamePhase !== 'draw' || currentPlayer !== 'player';
+            battlePhaseButton.disabled = gamePhase !== 'main' || currentPlayer !== 'player';
+            
+            // Atualizar log de mensagens
+            updateMessageLog();
+        }
+
+        // Obter nome da fase
+        function getPhaseName(phase) {
+            switch(phase) {
+                case 'draw': return 'Compra';
+                case 'main': return 'Principal';
+                case 'battle': return 'Batalha';
+                case 'end': return 'Fim';
+                default: return phase;
+            }
+        }
+
+        // Criar elemento de carta
+        function createCardElement(card, index, location, faceDown = false) {
+            const cardElement = document.createElement('div');
+            cardElement.className = `card ${card.type} ${card.position || ''}`;
+            cardElement.dataset.index = index;
+            cardElement.dataset.location = location;
+            
+            if (faceDown) {
+                cardElement.classList.add('face-down');
+                cardElement.innerHTML = `
+                    <div class="card-title">Carta Virada</div>
+                    <div class="card-image">?</div>
+                    <div class="card-stats">???</div>
+                `;
+            } else {
+                let statsText = '';
+                if (card.type === 'monster') {
+                    statsText = card.position === 'defense-position' ? `DEF/${card.def}` : `ATK/${card.atk}`;
+                } else {
+                    statsText = card.type.toUpperCase();
+                }
+                
+                cardElement.innerHTML = `
+                    <div class="card-title">${card.name}</div>
+                    <div class="card-image">${card.type === 'monster' ? '👾' : card.type === 'spell' ? '✨' : '⚠️'}</div>
+                    <div class="card-stats">${statsText}</div>
+                `;
+            }
+            
+            // Adicionar evento de clique para cartas na mão do jogador
+            if (location === 'hand' && !faceDown && currentPlayer === 'player') {
+                cardElement.addEventListener('click', () => showCardDetails(card, index));
+            }
+            
+            // Adicionar evento de clique para cartas no campo do jogador
+            if (location === 'field' && !faceDown && currentPlayer === 'player') {
+                if (gamePhase === 'main') {
+                    cardElement.addEventListener('click', () => selectCard(card, index));
+                } else if (gamePhase === 'battle') {
+                    cardElement.addEventListener('click', () => attackWithCard(card, index));
+                }
+            }
+            
+            return cardElement;
+        }
+
+        // Mostrar detalhes da carta
+        function showCardDetails(card, index) {
+            let cardHTML = `
+                <h2>${card.name}</h2>
+                <div class="card-detail-image">${card.type === 'monster' ? '👾' : card.type === 'spell' ? '✨' : '⚠️'}</div>
+                <div class="card-detail-info">
+                    <p><strong>Tipo:</strong> ${card.type === 'monster' ? 'Monstro' : card.type === 'spell' ? 'Magia' : 'Armadilha'}</p>
+            `;
+            
+            if (card.type === 'monster') {
+                cardHTML += `
+                    <p><strong>Atributo:</strong> ${card.attribute}</p>
+                    <p><strong>Nível:</strong> ${card.level}</p>
+                    <p><strong>ATK:</strong> ${card.atk}</p>
+                    <p><strong>DEF:</strong> ${card.def}</p>
+                `;
+            }
+            
+            cardHTML += `
+                    <p><strong>Descrição:</strong> ${card.description}</p>
+                </div>
+                <div class="action-buttons">
+            `;
+            
+            if (gamePhase === 'main') {
+                if (card.type === 'monster') {
+                    cardHTML += `
+                        <button onclick="playCard(${index}, 'attack')">Invocar em Ataque</button>
+                        <button onclick="playCard(${index}, 'defense')">Invocar em Defesa</button>
+                    `;
+                } else {
+                    cardHTML += `<button onclick="playCard(${index})">Ativar</button>`;
+                }
+            }
+            
+            cardHTML += `
+                    <button onclick="closeModal()">Fechar</button>
+                </div>
+            `;
+            
+            cardDetailContainer.innerHTML = cardHTML;
+            cardModal.style.display = 'flex';
+        }
+
+        // Jogar uma carta
+        function playCard(index, position = null) {
+            const card = playerHand[index];
+            
+            if (card.type === 'monster') {
+                if (playerField.length >= 5) {
+                    addMessage("Sistema", "Seu campo está cheio! Não é possível invocar mais monstros.");
+                    closeModal();
+                    return;
+                }
+                
+                // Adicionar monstro ao campo
+                card.position = position + '-position';
+                playerField.push(card);
+                playerHand.splice(index, 1);
+                addMessage("Jogador", `Invocou ${card.name} em modo ${position === 'attack' ? 'ataque' : 'defesa'}.`);
+                
+            } else {
+                // Ativar magia/armadilha
+                activateSpellTrap(card);
+                playerHand.splice(index, 1);
+            }
+            
+            closeModal();
+            updateUI();
+        }
+
+        // Ativar magia/armadilha
+        function activateSpellTrap(card) {
+            addMessage("Jogador", `Ativou ${card.name}!`);
+            
+            // Efeitos básicos de algumas cartas
+            switch(card.name) {
+                case "Buraco Negro":
+                    playerField = [];
+                    opponentField = [];
+                    addMessage("Sistema", "Buraco Negro destruiu todos os monstros no campo!");
+                    break;
+                default:
+                    addMessage("Sistema", `${card.name} foi ativado, mas não teve efeito visível.`);
+                    break;
+            }
+        }
+
+        // Selecionar uma carta para mudar sua posição
+        function selectCard(card, index) {
+            if (selectedCard === index) {
+                // Desselecionar se já estava selecionado
+                selectedCard = null;
+                addMessage("Sistema", "Carta desselecionada.");
+            } else {
+                // Selecionar a carta
+                selectedCard = index;
+                addMessage("Sistema", `${card.name} selecionada. Escolha uma ação.`);
+                
+                // Mostrar opções para a carta selecionada
+                showCardOptions(card);
+            }
+            updateUI();
+        }
+
+        // Mostrar opções para a carta selecionada
+        function showCardOptions(card) {
+            let cardHTML = `
+                <h2>${card.name}</h2>
+                <div class="card-detail-image">${card.type === 'monster' ? '👾' : card.type === 'spell' ? '✨' : '⚠️'}</div>
+                <div class="card-detail-info">
+                    <p><strong>Modo:</strong> ${card.position === 'attack-position' ? 'Ataque' : 'Defesa'}</p>
+            `;
+            
+            if (card.type === 'monster') {
+                const currentStat = card.position === 'attack-position' ? card.atk : card.def;
+                cardHTML += `<p><strong>${card.position === 'attack-position' ? 'ATK' : 'DEF'}:</strong> ${currentStat}</p>`;
+            }
+            
+            cardHTML += `
+                </div>
+                <div class="action-buttons">
+                    <button onclick="changeBattlePosition(${selectedCard})">Mudar Posição</button>
+                    <button onclick="sacrificeCard(${selectedCard})">Sacrificar</button>
+                    <button onclick="closeModal()">Fechar</button>
+                </div>
+            `;
+            
+            cardDetailContainer.innerHTML = cardHTML;
+            cardModal.style.display = 'flex';
+        }
+
+        // Mudar a posição de batalha de um monstro
+        function changeBattlePosition(index) {
+            const card = playerField[index];
+            
+            if (card.position === 'attack-position') {
+                card.position = 'defense-position';
+                addMessage("Jogador", `Colocou ${card.name} em posição de defesa.`);
+            } else {
+                card.position = 'attack-position';
+                addMessage("Jogador", `Colocou ${card.name} em posição de ataque.`);
+            }
+            
+            selectedCard = null;
+            closeModal();
+            updateUI();
+        }
+
+        // Sacrificar uma carta
+        function sacrificeCard(index) {
+            const card = playerField[index];
+            addMessage("Jogador", `Sacrificou ${card.name}.`);
+            playerField.splice(index, 1);
+            selectedCard = null;
+            closeModal();
+            updateUI();
+        }
+
+        // Atacar com uma carta
+        function attackWithCard(attackerIndex, attackerLocation) {
+            if (opponentField.length === 0) {
+                // Ataque direto
+                opponentLife -= playerField[attackerIndex].atk;
+                addMessage("Jogador", `${playerField[attackerIndex].name} atacou diretamente e causou ${playerField[attackerIndex].atk} de dano!`);
+                
+                if (opponentLife <= 0) {
+                    endGame(true);
+                }
+            } else {
+                // Mostrar opções de alvo
+                showAttackTargets(attackerIndex);
+                return;
+            }
+            
+            updateUI();
+        }
+
+        // Mostrar alvos para ataque
+        function showAttackTargets(attackerIndex) {
+            const attacker = playerField[attackerIndex];
+            let cardHTML = `
+                <h2>Escolha um alvo para ${attacker.name}</h2>
+                <div class="card-detail-image">⚔️</div>
+                <p>Selecione qual monstro inimigo atacar:</p>
+                <div class="action-buttons">
+            `;
+            
+            opponentField.forEach((card, index) => {
+                cardHTML += `<button onclick="battle(${attackerIndex}, ${index})">Atacar ${card.name}</button>`;
+            });
+            
+            cardHTML += `
+                    <button onclick="closeModal()">Cancelar</button>
+                </div>
+            `;
+            
+            cardDetailContainer.innerHTML = cardHTML;
+            cardModal.style.display = 'flex';
+        }
+
+        // Realizar uma batalha entre monstros
+        function battle(attackerIndex, defenderIndex) {
+            const attacker = playerField[attackerIndex];
+            const defender = opponentField[defenderIndex];
+            
+            if (defender.position === 'attack-position') {
+                // Batalha ATK vs ATK
+                if (attacker.atk > defender.atk) {
+                    opponentLife -= (attacker.atk - defender.atk);
+                    opponentField.splice(defenderIndex, 1);
+                    addMessage("Sistema", `${attacker.name} destruiu ${defender.name} e causou ${attacker.atk - defender.atk} de dano!`);
+                } else if (attacker.atk < defender.atk) {
+                    playerLife -= (defender.atk - attacker.atk);
+                    playerField.splice(attackerIndex, 1);
+                    addMessage("Sistema", `${defender.name} destruiu ${attacker.name} e você sofreu ${defender.atk - attacker.atk} de dano!`);
+                } else {
+                    playerField.splice(attackerIndex, 1);
+                    opponentField.splice(defenderIndex, 1);
+                    addMessage("Sistema", `${attacker.name} e ${defender.name} se destruíram mutuamente!`);
+                }
+            } else {
+                // Batalha ATK vs DEF
+                if (attacker.atk > defender.def) {
+                    opponentField.splice(defenderIndex, 1);
+                    addMessage("Sistema", `${attacker.name} destruiu ${defender.name} em posição de defesa!`);
+                } else if (attacker.atk < defender.def) {
+                    playerLife -= (defender.def - attacker.atk);
+                    addMessage("Sistema", `${attacker.name} não conseguiu destruir ${defender.name} e você sofreu ${defender.def - attacker.atk} de dano!`);
+                } else {
+                    addMessage("Sistema", `${attacker.name} não conseguiu destruir ${defender.name}!`);
+                }
+            }
+            
+            // Verificar se o jogo terminou
+            if (playerLife <= 0) {
+                endGame(false);
+            } else if (opponentLife <= 0) {
+                endGame(true);
+            }
+            
+            closeModal();
+            updateUI();
+        }
+
+        // Finalizar o jogo
+        function endGame(playerWon) {
+            gameStarted = false;
+            if (playerWon) {
+                addMessage("Sistema", "Parabéns! Você venceu o duelo!");
+            } else {
+                addMessage("Sistema", "Você perdeu o duelo. Tente novamente!");
+            }
+            
+            drawCardButton.disabled = true;
+            battlePhaseButton.disabled = true;
+            endTurnButton.disabled = true;
+        }
+
+        // Finalizar o turno
+        function endTurn() {
+            if (currentPlayer === 'player') {
+                currentPlayer = 'opponent';
+                gamePhase = 'draw';
+                addMessage("Sistema", "Turno do Oponente.");
+                
+                // Simular o turno do oponente
+                setTimeout(opponentTurn, 1000);
+            } else {
+                currentPlayer = 'player';
+                gamePhase = 'draw';
+                addMessage("Sistema", "Seu Turno.");
+            }
+            
+            updateUI();
+        }
+
+        // Turno do oponente (IA simples)
+        function opponentTurn() {
+            // Fase de Compra
+            if (opponentDeck.length > 0) {
+                opponentHand.push(drawCard(opponentDeck));
+                addMessage("Oponente", "Comprou uma carta.");
+            }
+            
+            gamePhase = 'main';
+            updateUI();
+            
+            setTimeout(() => {
+                // Invocar monstros (se possível)
+                for (let i = 0; i < opponentHand.length; i++) {
+                    if (opponentHand[i].type === 'monster' && opponentField.length < 5) {
+                        const card = opponentHand[i];
+                        card.position = Math.random() > 0.5 ? 'attack-position' : 'defense-position';
+                        opponentField.push(card);
+                        opponentHand.splice(i, 1);
+                        addMessage("Oponente", `Invocou ${card.name} em modo ${card.position === 'attack-position' ? 'ataque' : 'defesa'}.`);
+                        break;
+                    }
+                }
+                
+                gamePhase = 'battle';
+                updateUI();
+                
+                setTimeout(() => {
+                    // Fase de Batalha
+                    if (opponentField.length > 0) {
+                        const attackerIndex = Math.floor(Math.random() * opponentField.length);
+                        const attacker = opponentField[attackerIndex];
+                        
+                        if (playerField.length === 0) {
+                            // Ataque direto
+                            playerLife -= attacker.atk;
+                            addMessage("Oponente", `${attacker.name} atacou diretamente e causou ${attacker.atk} de dano!`);
+                        } else {
+                            // Escolher um monstro aleatório para atacar
+                            const defenderIndex = Math.floor(Math.random() * playerField.length);
+                            const defender = playerField[defenderIndex];
+                            
+                            if (defender.position === 'attack-position') {
+                                // Batalha ATK vs ATK
+                                if (attacker.atk > defender.atk) {
+                                    playerLife -= (attacker.atk - defender.atk);
+                                    playerField.splice(defenderIndex, 1);
+                                    addMessage("Sistema", `${attacker.name} destruiu ${defender.name} e causou ${attacker.atk - defender.atk} de dano!`);
+                                } else if (attacker.atk < defender.atk) {
+                                    opponentLife -= (defender.atk - attacker.atk);
+                                    opponentField.splice(attackerIndex, 1);
+                                    addMessage("Sistema", `${defender.name} destruiu ${attacker.name} e o oponente sofreu ${defender.atk - attacker.atk} de dano!`);
+                                } else {
+                                    playerField.splice(defenderIndex, 1);
+                                    opponentField.splice(attackerIndex, 1);
+                                    addMessage("Sistema", `${attacker.name} e ${defender.name} se destruíram mutuamente!`);
+                                }
+                            } else {
+                                // Batalha ATK vs DEF
+                                if (attacker.atk > defender.def) {
+                                    playerField.splice(defenderIndex, 1);
+                                    addMessage("Sistema", `${attacker.name} destruiu ${defender.name} em posição de defesa!`);
+                                } else if (attacker.atk < defender.def) {
+                                    opponentLife -= (defender.def - attacker.atk);
+                                    addMessage("Sistema", `${attacker.name} não conseguiu destruir ${defender.name} e o oponente sofreu ${defender.def - attacker.atk} de dano!`);
+                                } else {
+                                    addMessage("Sistema", `${attacker.name} não conseguiu destruir ${defender.name}!`);
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Verificar se o jogo terminou
+                    if (playerLife <= 0) {
+                        endGame(false);
+                    } else if (opponentLife <= 0) {
+                        endGame(true);
+                    } else {
+                        gamePhase = 'end';
+                        updateUI();
+                        
+                        // Finalizar turno do oponente
+                        setTimeout(() => {
+                            addMessage("Oponente", "Finalizou o turno.");
+                            endTurn();
+                        }, 1000);
+                    }
+                }, 1500);
+            }, 1500);
+        }
+
+        // Adicionar mensagem ao log
+        function addMessage(sender, text) {
+            messageLog.push({ sender, text });
+            if (messageLog.length > 10) {
+                messageLog.shift(); // Manter apenas as 10 mensagens mais recentes
+            }
+            updateMessageLog();
+        }
+
+        // Atualizar o log de mensagens
+        function updateMessageLog() {
+            messageLogContainer.innerHTML = '';
+            messageLog.forEach(message => {
+                const messageElement = document.createElement('div');
+                messageElement.className = `message ${message.sender.toLowerCase()}`;
+                messageElement.textContent = `${message.sender}: ${message.text}`;
+                messageLogContainer.appendChild(messageElement);
+            });
+            messageLogContainer.scrollTop = messageLogContainer.scrollHeight;
+        }
+
+        // Fechar o modal
+        function closeModal() {
+            cardModal.style.display = 'none';
+            selectedCard = null;
+        }
+
+        // Avançar para a fase de batalha
+        function startBattlePhase() {
+            if (gamePhase === 'main') {
+                gamePhase = 'battle';
+                addMessage("Sistema", "Fase de Batalha iniciada. Selecione um monstro para atacar.");
+                updateUI();
+            }
+        }
+
+        // Event listeners
+        drawCardButton.addEventListener('click', () => {
+            if (playerDeck.length > 0 && playerHand.length < 7) {
+                playerHand.push(drawCard(playerDeck));
+                addMessage("Jogador", "Comprou uma carta.");
+                gamePhase = 'main';
+                updateUI();
+            } else {
+                addMessage("Sistema", "Não é possível comprar mais cartas!");
+            }
+        });
+
+        battlePhaseButton.addEventListener('click', startBattlePhase);
+        endTurnButton.addEventListener('click', endTurn);
+        newGameButton.addEventListener('click', initGame);
+        closeModalButton.addEventListener('click', closeModal);
+
+        // Iniciar o jogo quando a página carregar
+        window.onload = initGame;
+
+        // Funções globais para os botões
+        window.playCard = playCard;
+        window.changeBattlePosition = changeBattlePosition;
+        window.sacrificeCard = sacrificeCard;
+        window.battle = battle;
+        window.closeModal = closeModal;
+    </script>
+</body>
+</html>
